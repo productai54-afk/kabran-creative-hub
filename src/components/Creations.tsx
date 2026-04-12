@@ -1,57 +1,85 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { FileImage, Video, FolderKanban, ExternalLink } from 'lucide-react';
+import { FileImage, Video, FolderKanban, ExternalLink, Brain, Target, Play } from 'lucide-react';
+
+// Import images
+import campagneCan from '@/assets/campagne-can.png';
+import campagnePollution from '@/assets/campagne-pollution.png';
+import campagneJeunes from '@/assets/campagne-jeunes.png';
+import campagnePollutionAgee from '@/assets/campagne-pollution-agee.png';
+import cafeAffiche from '@/assets/cafe-affiche.png';
+import novembreBleu from '@/assets/novembre-bleu.png';
+import visuelWeekend from '@/assets/visuel-weekend.png';
 
 const categories = [
   { id: 'all', label: 'Tout', icon: FolderKanban },
-  { id: 'affiches', label: 'Affiches & Flyers', icon: FileImage },
+  { id: 'visuels', label: 'Visuels & Affiches', icon: FileImage },
   { id: 'videos', label: 'Montages Vidéos', icon: Video },
-  { id: 'projets', label: 'Projets IA', icon: FolderKanban },
+  { id: 'ia', label: 'IA Générative', icon: Brain },
+  { id: 'strategie', label: 'Stratégie & Communication', icon: Target },
 ];
 
 const creations = [
+  // Visuels & Affiches
   {
     id: 1,
-    title: 'Affiche Événementielle',
-    category: 'affiches',
-    description: 'Design créatif pour événements professionnels',
-    color: 'from-cyan-500/20 to-teal-500/20',
+    title: 'Campagne CAN Morocco 2025',
+    category: 'visuels',
+    description: 'Affiche promotionnelle pour ASD Travel & Services - Campagne CAN 2025',
+    image: campagneCan,
   },
   {
     id: 2,
-    title: 'Flyer Promotionnel',
-    category: 'affiches',
-    description: 'Création de supports marketing impactants',
-    color: 'from-orange-500/20 to-red-500/20',
+    title: 'Affiche E-Café ByMomo',
+    category: 'visuels',
+    description: 'Création visuelle complète pour E-Café - identité de marque et promotion',
+    image: cafeAffiche,
   },
   {
     id: 3,
-    title: 'Montage Vidéo Corporate',
-    category: 'videos',
-    description: 'Vidéos professionnelles et dynamiques',
-    color: 'from-purple-500/20 to-pink-500/20',
+    title: 'Novembre Bleu',
+    category: 'visuels',
+    description: 'Visuel de sensibilisation - Lutte contre le cancer de la prostate',
+    image: novembreBleu,
   },
   {
     id: 4,
-    title: 'Contenu Réseaux Sociaux',
-    category: 'videos',
-    description: 'Contenus optimisés pour les plateformes',
-    color: 'from-blue-500/20 to-cyan-500/20',
+    title: 'Visuel Weekend',
+    category: 'visuels',
+    description: 'Création visuelle dynamique et moderne - Reproduction créative',
+    image: visuelWeekend,
   },
+  // Stratégie & Communication
   {
     id: 5,
-    title: 'Génération IA Créative',
-    category: 'projets',
-    description: 'Création d\'images et contenus via IA',
-    color: 'from-green-500/20 to-emerald-500/20',
+    title: 'Campagne Stop Pollution Plastique',
+    category: 'strategie',
+    description: 'Campagne de sensibilisation contre la pollution plastique - Stratégie multi-cibles',
+    image: campagnePollution,
   },
   {
     id: 6,
-    title: 'Branding Visuel',
-    category: 'affiches',
-    description: 'Identité visuelle complète',
-    color: 'from-yellow-500/20 to-orange-500/20',
+    title: 'Sensibilisation Jeunesse Engagée',
+    category: 'strategie',
+    description: 'Campagne ciblée jeunes - #JeunesseEngagée #GénérationPropre #ZéroPlastiques',
+    image: campagneJeunes,
+  },
+  {
+    id: 7,
+    title: 'Sensibilisation Personnes Âgées',
+    category: 'strategie',
+    description: 'Campagne ciblée personnes âgées - Adoptons des gestes saints pour un héritage saint',
+    image: campagnePollutionAgee,
+  },
+  // Vidéos
+  {
+    id: 8,
+    title: 'Générique Livre Full IA',
+    category: 'ia',
+    description: 'Vidéo générative IA - Générique de livre entièrement créé par intelligence artificielle',
+    isVideo: true,
+    videoSrc: '/videos/generique-livre-ia.mp4',
   },
 ];
 
@@ -59,6 +87,7 @@ const Creations = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const filteredCreations = activeCategory === 'all'
     ? creations
@@ -67,7 +96,7 @@ const Creations = () => {
   return (
     <section id="creations" className="section-padding relative overflow-hidden" ref={ref}>
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'hsl(24 95% 60%)' }} />
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'hsl(260 85% 60%)' }} />
       </div>
 
       <div className="container mx-auto relative z-10">
@@ -84,7 +113,7 @@ const Creations = () => {
             Mes <span className="gradient-text">Créations</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Découvrez une sélection de mes travaux en design graphique, montage vidéo et création IA
+            Découvrez une sélection de mes travaux classés par catégorie
           </p>
         </motion.div>
 
@@ -115,51 +144,79 @@ const Creations = () => {
         </motion.div>
 
         {/* Creations Grid */}
-        <motion.div 
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          layout
-        >
-          {filteredCreations.map((creation, index) => (
-            <motion.div
-              key={creation.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-              className="group"
-            >
-              <div className="relative rounded-2xl overflow-hidden card-gradient border border-border hover:border-primary/30 transition-all duration-500 hover-glow">
-                {/* Placeholder for project image */}
-                <div className={`aspect-[4/3] bg-gradient-to-br ${creation.color} flex items-center justify-center`}>
-                  <div className="p-8 text-center">
-                    {creation.category === 'affiches' && <FileImage className="w-16 h-16 text-foreground/30 mx-auto mb-4" />}
-                    {creation.category === 'videos' && <Video className="w-16 h-16 text-foreground/30 mx-auto mb-4" />}
-                    {creation.category === 'projets' && <FolderKanban className="w-16 h-16 text-foreground/30 mx-auto mb-4" />}
-                  </div>
-                  
-                  {/* Overlay on hover */}
-                  <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                    <motion.div
-                      className="p-4 rounded-full"
-                      style={{ background: 'var(--gradient-primary)' }}
-                      initial={{ scale: 0 }}
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <ExternalLink className="w-6 h-6 text-primary-foreground" />
-                    </motion.div>
-                  </div>
-                </div>
+        <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" layout>
+          <AnimatePresence mode="popLayout">
+            {filteredCreations.map((creation, index) => (
+              <motion.div
+                key={creation.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="group"
+              >
+                <div 
+                  className="relative rounded-2xl overflow-hidden card-gradient border border-border hover:border-primary/30 transition-all duration-500 hover-glow cursor-pointer"
+                  onClick={() => {
+                    if ('image' in creation && creation.image) {
+                      setSelectedImage(creation.image as string);
+                    }
+                  }}
+                >
+                  <div className="aspect-square overflow-hidden">
+                    {creation.isVideo ? (
+                      <div className="relative w-full h-full bg-secondary flex items-center justify-center">
+                        <video
+                          src={creation.videoSrc}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          onMouseEnter={(e) => (e.target as HTMLVideoElement).play()}
+                          onMouseLeave={(e) => { (e.target as HTMLVideoElement).pause(); (e.target as HTMLVideoElement).currentTime = 0; }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="p-4 rounded-full bg-primary/80 group-hover:bg-primary transition-colors">
+                            <Play className="w-8 h-8 text-primary-foreground" fill="currentColor" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={(creation as any).image}
+                        alt={creation.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    )}
 
-                {/* Content */}
-                <div className="p-5">
-                  <h4 className="font-heading font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {creation.title}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">{creation.description}</p>
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                      <motion.div
+                        className="p-4 rounded-full"
+                        style={{ background: 'var(--gradient-primary)' }}
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        <ExternalLink className="w-6 h-6 text-primary-foreground" />
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-1 rounded-full text-xs font-medium text-primary border border-primary/30" style={{ background: 'hsl(220 90% 56% / 0.1)' }}>
+                        {categories.find(c => c.id === creation.category)?.label}
+                      </span>
+                    </div>
+                    <h4 className="font-heading font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {creation.title}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{creation.description}</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </motion.div>
 
         {/* CTA */}
@@ -169,9 +226,7 @@ const Creations = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <p className="text-muted-foreground mb-4">
-            Découvrez plus de créations sur mes profils
-          </p>
+          <p className="text-muted-foreground mb-4">Découvrez plus de créations sur mes profils</p>
           <div className="flex flex-wrap justify-center gap-4">
             <motion.a
               href="https://www.behance.net/daokabran"
@@ -200,6 +255,29 @@ const Creations = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.img
+              src={selectedImage}
+              alt="Création agrandie"
+              className="max-w-full max-h-[90vh] rounded-2xl object-contain"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

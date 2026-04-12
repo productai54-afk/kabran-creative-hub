@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { MapPin, Phone, Mail, Download } from 'lucide-react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 const About = () => {
   const ref = useRef(null);
@@ -15,9 +15,8 @@ const About = () => {
 
   return (
     <section id="apropos" className="section-padding relative overflow-hidden" ref={ref}>
-      {/* Background decoration */}
       <div className="absolute top-0 right-0 w-1/2 h-full opacity-5">
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl" style={{ background: 'hsl(174 72% 50%)' }} />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl" style={{ background: 'hsl(220 90% 56%)' }} />
       </div>
 
       <div className="container mx-auto relative z-10">
@@ -36,7 +35,6 @@ const About = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -48,19 +46,18 @@ const About = () => {
             
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Je suis <strong className="text-foreground">Dao KABRAN</strong>, un créateur digital 
-                spécialisé dans l'intelligence artificielle appliquée à la création de contenu, 
-                le design graphique et le montage vidéo.
+                Je suis <strong className="text-foreground">Dao KABRAN</strong>, alias <strong className="text-primary">@Anonymecreator</strong>, 
+                créateur digital spécialisé dans l'intelligence artificielle appliquée à la création de contenu, 
+                le design graphique, le montage vidéo et la gestion de communication.
               </p>
               <p>
                 Titulaire d'un Master en sociologie des migrations de l'Université Félix 
-                Houphouët-Boigny, j'ai su combiner mes compétences analytiques avec ma passion 
-                pour la création numérique pour offrir des solutions visuelles uniques et impactantes.
+                Houphouët-Boigny et formé en tant qu'IA Product Creator chez IISAN SIMPLON CI, 
+                je combine compétences analytiques et créativité numérique pour des solutions visuelles impactantes.
               </p>
               <p>
-                Actuellement en formation en tant qu'IA Product Creator chez IISAN SIMPLON CI, 
-                je développe constamment mes compétences pour rester à la pointe des dernières 
-                technologies et tendances créatives.
+                Actuellement Chargé de Communication chez Nafrica et freelance, je propose des prestations 
+                complètes en stratégie de communication, design et production de contenu créatif.
               </p>
             </div>
 
@@ -102,7 +99,6 @@ const About = () => {
             </div>
           </motion.div>
 
-          {/* Right Content - Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -118,7 +114,7 @@ const About = () => {
                   transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl" style={{ background: 'hsl(174 72% 50% / 0.1)' }}>
+                    <div className="p-3 rounded-xl" style={{ background: 'hsl(220 90% 56% / 0.1)' }}>
                       <item.icon className="w-6 h-6 text-primary" />
                     </div>
                     <div>
@@ -132,7 +128,6 @@ const About = () => {
               ))}
             </div>
 
-            {/* Interests */}
             <motion.div
               className="mt-8 p-6 rounded-2xl card-gradient border border-border"
               initial={{ opacity: 0, y: 20 }}
@@ -145,7 +140,7 @@ const About = () => {
                   <span
                     key={interest}
                     className="px-4 py-2 rounded-full text-sm font-medium border border-primary/30 text-primary"
-                    style={{ background: 'hsl(174 72% 50% / 0.1)' }}
+                    style={{ background: 'hsl(220 90% 56% / 0.1)' }}
                   >
                     {interest}
                   </span>

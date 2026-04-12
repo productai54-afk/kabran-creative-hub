@@ -16,9 +16,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -35,14 +33,14 @@ const Header = () => {
       <div className="container mx-auto px-4 md:px-8 flex items-center justify-between">
         <motion.a
           href="#accueil"
-          className="font-heading text-2xl font-bold gradient-text"
+          className="font-heading text-2xl font-bold"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          DK.
+          <span className="gradient-text">DK.</span>
+          <span className="text-xs text-muted-foreground ml-1 font-normal">@Anonymecreator</span>
         </motion.a>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item, index) => (
             <motion.a
@@ -59,25 +57,20 @@ const Header = () => {
           ))}
           <motion.a
             href="#contact"
-            className="px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-300"
+            className="px-5 py-2.5 rounded-full font-medium text-sm text-primary-foreground transition-all duration-300"
             style={{ background: 'var(--gradient-primary)' }}
-            whileHover={{ scale: 1.05, boxShadow: '0 10px 30px -10px hsl(174 72% 50% / 0.5)' }}
+            whileHover={{ scale: 1.05, boxShadow: '0 10px 30px -10px hsl(220 90% 56% / 0.5)' }}
             whileTap={{ scale: 0.95 }}
           >
             Me contacter
           </motion.a>
         </nav>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden text-foreground p-2"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
+        <button className="md:hidden text-foreground p-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -102,7 +95,7 @@ const Header = () => {
               ))}
               <motion.a
                 href="#contact"
-                className="px-5 py-3 rounded-full font-medium text-center mt-2"
+                className="px-5 py-3 rounded-full font-medium text-center text-primary-foreground mt-2"
                 style={{ background: 'var(--gradient-primary)' }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
