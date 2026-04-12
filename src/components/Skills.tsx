@@ -2,68 +2,52 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { 
-  Brain, 
-  Palette, 
-  Video, 
-  Layers, 
-  Wand2, 
-  Camera, 
-  PenTool, 
-  Sparkles,
-  FileImage,
-  Film
+  Brain, Palette, Video, Wand2, Camera, PenTool, Sparkles, Figma, 
+  MessageSquare, Target, Layers, MonitorSmartphone
 } from 'lucide-react';
 
-const skills = [
+const skillCategories = [
   {
-    category: 'Intelligence Artificielle',
-    icon: Brain,
-    items: [
-      { name: 'Prompt Engineering', level: 90 },
-      { name: 'Génération d\'images IA', level: 85 },
-      { name: 'Outils IA créatifs', level: 88 },
-      { name: 'Automatisation IA', level: 80 },
-    ],
-  },
-  {
-    category: 'Design Graphique',
+    title: 'Design & Création',
     icon: Palette,
-    items: [
-      { name: 'Adobe Photoshop', level: 92 },
-      { name: 'Adobe Illustrator', level: 85 },
-      { name: 'Canva Pro', level: 95 },
-      { name: 'Design d\'affiches', level: 90 },
+    skills: [
+      { name: 'Adobe Photoshop', icon: Layers },
+      { name: 'Adobe Illustrator', icon: PenTool },
+      { name: 'Canva Pro', icon: MonitorSmartphone },
+      { name: 'Affinity Designer', icon: Palette },
+      { name: 'Figma', icon: Figma },
     ],
   },
   {
-    category: 'Montage Vidéo',
+    title: 'Montage Vidéo & Motion',
     icon: Video,
-    items: [
-      { name: 'Adobe Premiere Pro', level: 88 },
-      { name: 'CapCut', level: 92 },
-      { name: 'After Effects', level: 75 },
-      { name: 'Motion Design', level: 78 },
+    skills: [
+      { name: 'Adobe Premiere Pro', icon: Video },
+      { name: 'CapCut', icon: Camera },
+      { name: 'After Effects', icon: Sparkles },
+      { name: 'Motion Design IA', icon: Wand2 },
     ],
   },
   {
-    category: 'Création de Contenu',
-    icon: Sparkles,
-    items: [
-      { name: 'Création de flyers', level: 95 },
-      { name: 'Réseaux sociaux', level: 90 },
-      { name: 'Branding visuel', level: 85 },
-      { name: 'Storytelling visuel', level: 88 },
+    title: 'Intelligence Artificielle',
+    icon: Brain,
+    skills: [
+      { name: 'Prompt Engineering', icon: Brain },
+      { name: 'Génération d\'images IA', icon: Wand2 },
+      { name: 'Vidéos IA génératives', icon: Sparkles },
+      { name: 'Outils IA créatifs', icon: Brain },
     ],
   },
-];
-
-const toolIcons = [
-  { icon: PenTool, label: 'Design' },
-  { icon: Camera, label: 'Photo' },
-  { icon: Film, label: 'Vidéo' },
-  { icon: Wand2, label: 'IA' },
-  { icon: FileImage, label: 'Graphisme' },
-  { icon: Layers, label: 'Compositing' },
+  {
+    title: 'Gestion de Communication',
+    icon: MessageSquare,
+    skills: [
+      { name: 'Élaboration de stratégie de communication', icon: Target },
+      { name: 'Pilotage projet 360°', icon: Layers },
+      { name: 'Branding & Identité visuelle', icon: Palette },
+      { name: 'Community Management', icon: MessageSquare },
+    ],
+  },
 ];
 
 const Skills = () => {
@@ -72,10 +56,9 @@ const Skills = () => {
 
   return (
     <section id="competences" className="section-padding relative overflow-hidden" ref={ref}>
-      {/* Background decorations */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/3 left-0 w-72 h-72 rounded-full blur-3xl" style={{ background: 'hsl(24 95% 60%)' }} />
-        <div className="absolute bottom-1/3 right-0 w-96 h-96 rounded-full blur-3xl" style={{ background: 'hsl(174 72% 50%)' }} />
+        <div className="absolute top-1/3 left-0 w-72 h-72 rounded-full blur-3xl" style={{ background: 'hsl(220 90% 56%)' }} />
+        <div className="absolute bottom-1/3 right-0 w-96 h-96 rounded-full blur-3xl" style={{ background: 'hsl(260 85% 60%)' }} />
       </div>
 
       <div className="container mx-auto relative z-10">
@@ -96,63 +79,40 @@ const Skills = () => {
           </p>
         </motion.div>
 
-        {/* Tool Icons */}
-        <motion.div
-          className="flex flex-wrap justify-center gap-6 mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {toolIcons.map((tool, index) => (
-            <motion.div
-              key={tool.label}
-              className="p-4 rounded-2xl card-gradient border border-border hover:border-primary/50 transition-all duration-300 group"
-              whileHover={{ scale: 1.1, y: -5 }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-            >
-              <tool.icon className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
-            </motion.div>
-          ))}
-        </motion.div>
-
         {/* Skills Grid */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {skills.map((category, categoryIndex) => (
+          {skillCategories.map((category, categoryIndex) => (
             <motion.div
-              key={category.category}
+              key={category.title}
               className="p-6 lg:p-8 rounded-3xl card-gradient border border-border hover:border-primary/30 transition-all duration-500 hover-glow"
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.4 + categoryIndex * 0.1 }}
+              transition={{ duration: 0.5, delay: 0.2 + categoryIndex * 0.1 }}
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 rounded-xl" style={{ background: 'var(--gradient-primary)' }}>
                   <category.icon className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <h3 className="font-heading text-xl font-bold text-foreground">
-                  {category.category}
+                  {category.title}
                 </h3>
               </div>
 
-              <div className="space-y-5">
-                {category.items.map((skill, skillIndex) => (
-                  <div key={skill.name}>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">{skill.name}</span>
-                      <span className="text-sm font-medium text-primary">{skill.level}%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{ background: 'var(--gradient-primary)' }}
-                        initial={{ width: 0 }}
-                        animate={isInView ? { width: `${skill.level}%` } : {}}
-                        transition={{ duration: 1, delay: 0.6 + categoryIndex * 0.1 + skillIndex * 0.1 }}
-                      />
-                    </div>
-                  </div>
+              <div className="flex flex-wrap gap-3">
+                {category.skills.map((skill, skillIndex) => (
+                  <motion.div
+                    key={skill.name}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-secondary/50 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ duration: 0.3, delay: 0.4 + categoryIndex * 0.1 + skillIndex * 0.05 }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                  >
+                    <skill.icon className="w-4 h-4 text-primary group-hover:text-accent transition-colors" />
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                      {skill.name}
+                    </span>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
