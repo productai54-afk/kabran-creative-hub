@@ -229,6 +229,17 @@ const Creations = () => {
           <p className="text-muted-foreground mb-4">Découvrez plus de créations sur mes profils</p>
           <div className="flex flex-wrap justify-center gap-4">
             <motion.a
+              href="https://drive.google.com/drive/folders/1TGHRMPP9-JsJIijgGtmcAuvIiDHPH0jB?usp=share_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 rounded-full font-medium text-sm text-primary-foreground flex items-center gap-2"
+              style={{ background: 'var(--gradient-primary)' }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <Brain size={16} />
+              Voir mes projets IA (Drive)
+            </motion.a>
+            <motion.a
               href="https://www.behance.net/daokabran"
               target="_blank"
               rel="noopener noreferrer"

@@ -8,17 +8,31 @@ import carteJeuneImage from '@/assets/carte-jeune.png';
 const experiences = [
   {
     type: 'emploi',
-    title: 'Chargé de Communication',
-    organization: 'Nafrica',
+    title: 'Chargé de Communication & Gestionnaire Administratif',
+    organization: 'Nafrica — Marque PALMITA (Cosmétique)',
     period: 'En cours',
-    description: 'Élaboration et pilotage de stratégies de communication, création de contenus visuels, gestion des réseaux sociaux et coordination de projets 360°.',
+    description: 'Élaboration et pilotage de stratégies de communication, création de contenus visuels, gestion des réseaux sociaux et coordination de projets 360°. Gestion administrative pour la marque cosmétique PALMITA.',
   },
   {
     type: 'freelance',
     title: 'Freelance - IA Digital Creator & Graphiste',
     organization: 'Indépendant',
     period: 'En cours',
-    description: 'Prestations en design graphique, montage vidéo, création de contenu IA et stratégie de communication pour divers clients et entreprises.',
+    description: 'Prestations en design graphique, montage vidéo, création de contenu IA et stratégie de communication. Clients : ASD GROUP (agence de voyage), Somet Shop, et divers autres clients.',
+  },
+  {
+    type: 'terrain',
+    title: 'Chef d\'Équipe Enquête de Terrain & Enquêteur',
+    organization: 'Projet WURI (Banque Mondiale), Abidjan',
+    period: '2025',
+    description: 'Organisation de consultations communautaires et focus groups. Collecte et contrôle qualité des données de terrain. Coordination d\'enquêtes et reporting aux chefs de projet.',
+  },
+  {
+    type: 'consultant',
+    title: 'Assistant Consultant',
+    organization: 'Projet WURI (Banque Mondiale), Abidjan',
+    period: '2025',
+    description: 'Retranscription des données. Élaboration de check-lists d\'entretiens. Conception de grilles de recensement des données. Contribution à l\'analyse préliminaire des données.',
   },
 ];
 
