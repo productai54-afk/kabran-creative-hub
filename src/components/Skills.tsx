@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { 
-  Brain, Palette, Video, Wand2, Camera, PenTool, Sparkles, Figma, 
-  MessageSquare, Target, Layers, MonitorSmartphone
+  Brain, Palette, Video, Wand2, Figma, 
+  Layers, MonitorSmartphone, Sparkles, Image, Clapperboard, Cpu
 } from 'lucide-react';
 
 const skillCategories = [
@@ -11,8 +11,6 @@ const skillCategories = [
     title: 'Design & Création',
     icon: Palette,
     skills: [
-      { name: 'Adobe Photoshop', icon: Layers },
-      { name: 'Adobe Illustrator', icon: PenTool },
       { name: 'Canva Pro', icon: MonitorSmartphone },
       { name: 'Affinity Designer', icon: Palette },
       { name: 'Figma', icon: Figma },
@@ -22,9 +20,7 @@ const skillCategories = [
     title: 'Montage Vidéo & Motion',
     icon: Video,
     skills: [
-      { name: 'Adobe Premiere Pro', icon: Video },
-      { name: 'CapCut', icon: Camera },
-      { name: 'After Effects', icon: Sparkles },
+      { name: 'CapCut', icon: Video },
       { name: 'Motion Design IA', icon: Wand2 },
     ],
   },
@@ -33,19 +29,10 @@ const skillCategories = [
     icon: Brain,
     skills: [
       { name: 'Prompt Engineering', icon: Brain },
-      { name: 'Génération d\'images IA', icon: Wand2 },
-      { name: 'Vidéos IA génératives', icon: Sparkles },
-      { name: 'Outils IA créatifs', icon: Brain },
-    ],
-  },
-  {
-    title: 'Gestion de Communication',
-    icon: MessageSquare,
-    skills: [
-      { name: 'Élaboration de stratégie de communication', icon: Target },
-      { name: 'Pilotage projet 360°', icon: Layers },
-      { name: 'Branding & Identité visuelle', icon: Palette },
-      { name: 'Community Management', icon: MessageSquare },
+      { name: 'Génération d\'images IA', icon: Image },
+      { name: 'Vidéos IA génératives', icon: Clapperboard },
+      { name: 'Animation et court métrage réaliste', icon: Sparkles },
+      { name: 'Compréhension et maîtrise d\'outils IA', icon: Cpu },
     ],
   },
 ];
