@@ -62,7 +62,7 @@ const Skills = () => {
             <span className="gradient-text">Compétences</span> & Outils
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Un ensemble de compétences polyvalentes au service de votre créativité
+            Un ensemble de compétences créatives et techniques au service de vos projets
           </p>
         </motion.div>
 
