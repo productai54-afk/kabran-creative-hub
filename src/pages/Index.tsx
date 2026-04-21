@@ -16,19 +16,44 @@ const Index = () => {
         <Header />
         <main>
           <Hero />
-          <SectionGate sectionId="apropos" gameType="quiz" gameTitle="Répondez au quiz pour découvrir mon profil">
+          <SectionGate
+            sectionId="apropos"
+            levelLabel="NIVEAU 1"
+            gameTitle="Ramasse les pièces pour découvrir mon profil"
+            coinsRequired={5}
+          >
             <About />
           </SectionGate>
-          <SectionGate sectionId="competences" gameType="memory" gameTitle="Trouvez les paires pour voir mes compétences">
+          <SectionGate
+            sectionId="competences"
+            levelLabel="NIVEAU 2"
+            gameTitle="Collecte les pièces pour voir mes compétences"
+            coinsRequired={6}
+          >
             <Skills />
           </SectionGate>
-          <SectionGate sectionId="experiences" gameType="sequence" gameTitle="Reproduisez la séquence pour voir mon parcours">
+          <SectionGate
+            sectionId="experiences"
+            levelLabel="NIVEAU 3"
+            gameTitle="Récupère les pièces pour voir mon parcours"
+            coinsRequired={7}
+          >
             <Experience />
           </SectionGate>
-          <SectionGate sectionId="creations" gameType="puzzle" gameTitle="Résolvez le puzzle pour voir mes créations">
+          <SectionGate
+            sectionId="creations"
+            levelLabel="NIVEAU 4"
+            gameTitle="Attrape les pièces pour voir mes créations"
+            coinsRequired={8}
+          >
             <Creations />
           </SectionGate>
-          <SectionGate sectionId="contact" gameType="code" gameTitle="Entrez le code secret pour me contacter">
+          <SectionGate
+            sectionId="contact"
+            levelLabel="NIVEAU FINAL"
+            gameTitle="Dernier défi pour me contacter"
+            coinsRequired={10}
+          >
             <Footer />
           </SectionGate>
         </main>
