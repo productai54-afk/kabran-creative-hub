@@ -1,378 +1,294 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, RotateCcw, Sparkles, Zap } from 'lucide-react';
+import { X, Sparkles, Zap, Coins } from 'lucide-react';
 
 interface MiniGameProps {
-  type: 'quiz' | 'memory' | 'sequence' | 'puzzle' | 'code';
+  type?: string;
   onWin: () => void;
   onClose: () => void;
+  coinsRequired?: number;
+  gameTitle?: string;
 }
 
-// Quiz game
-const QuizGame = ({ onWin }: { onWin: () => void }) => {
-  const questions = [
-    {
-      q: "Quel outil Adobe est utilisé pour le montage vidéo ?",
-      options: ["Photoshop", "Premiere Pro", "Illustrator", "InDesign"],
-      correct: 1,
-    },
-    {
-      q: "Que signifie 'IA' dans la création digitale ?",
-      options: ["Image Avancée", "Intelligence Artificielle", "Innovation Artistique", "Illustration Animée"],
-      correct: 1,
-    },
-  ];
-  const [qIndex, setQIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [correct, setCorrect] = useState(false);
+// Arena dimensions (game units)
+const ARENA_W = 320;
+const ARENA_H = 220;
+const PLAYER_SIZE = 24;
+const COIN_SIZE = 16;
+const SPEED = 4;
 
-  const handleAnswer = (i: number) => {
-    setSelected(i);
-    if (i === questions[qIndex].correct) {
-      if (qIndex === questions.length - 1) {
-        setCorrect(true);
-        setTimeout(onWin, 800);
-      } else {
-        setTimeout(() => {
-          setQIndex((p) => p + 1);
-          setSelected(null);
-        }, 600);
-      }
-    } else {
-      setTimeout(() => setSelected(null), 800);
-    }
-  };
+interface Coin {
+  id: number;
+  x: number;
+  y: number;
+  collected: boolean;
+}
 
-  return (
-    <div className="space-y-6">
-      <div className="flex gap-2 mb-4">
-        {questions.map((_, i) => (
-          <div
-            key={i}
-            className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-              i < qIndex ? 'xp-bar' : i === qIndex ? 'bg-primary/50' : 'bg-secondary'
-            }`}
-          />
-        ))}
-      </div>
-      <p className="text-foreground font-medium text-center">{questions[qIndex].q}</p>
-      <div className="grid grid-cols-2 gap-3">
-        {questions[qIndex].options.map((opt, i) => (
-          <motion.button
-            key={i}
-            onClick={() => selected === null && handleAnswer(i)}
-            className={`p-4 rounded-xl text-sm font-medium transition-all duration-300 border ${
-              selected === i
-                ? i === questions[qIndex].correct
-                  ? 'border-green-500 bg-green-500/20 text-green-400'
-                  : 'border-red-500 bg-red-500/20 text-red-400 animate-shake'
-                : 'border-border bg-secondary/50 text-foreground hover:border-primary/50'
-            }`}
-            whileHover={selected === null ? { scale: 1.03 } : {}}
-            whileTap={selected === null ? { scale: 0.97 } : {}}
-          >
-            {opt}
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-};
+const CoinCollectorGame = ({
+  onWin,
+  coinsRequired = 8,
+}: {
+  onWin: () => void;
+  coinsRequired?: number;
+}) => {
+  const [player, setPlayer] = useState({ x: ARENA_W / 2, y: ARENA_H / 2 });
+  const [coins, setCoins] = useState<Coin[]>([]);
+  const [collected, setCollected] = useState(0);
+  const [started, setStarted] = useState(false);
+  const keys = useRef<Record<string, boolean>>({});
+  const rafRef = useRef<number>();
+  const playerRef = useRef(player);
+  const coinsRef = useRef<Coin[]>([]);
 
-// Memory game
-const MemoryGame = ({ onWin }: { onWin: () => void }) => {
-  const emojis = ['🎨', '🎬', '🤖', '📱', '✏️', '📸'];
-  const [cards, setCards] = useState<{ emoji: string; flipped: boolean; matched: boolean }[]>([]);
-  const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
-  const [moves, setMoves] = useState(0);
+  // generate coins
+  useEffect(() => {
+    const newCoins: Coin[] = Array.from({ length: coinsRequired }).map((_, i) => ({
+      id: i,
+      x: 30 + Math.random() * (ARENA_W - 60),
+      y: 30 + Math.random() * (ARENA_H - 60),
+      collected: false,
+    }));
+    setCoins(newCoins);
+    coinsRef.current = newCoins;
+  }, [coinsRequired]);
 
   useEffect(() => {
-    const shuffled = [...emojis, ...emojis]
-      .sort(() => Math.random() - 0.5)
-      .map((emoji) => ({ emoji, flipped: false, matched: false }));
-    setCards(shuffled);
+    playerRef.current = player;
+  }, [player]);
+
+  // keyboard
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      keys.current[e.key.toLowerCase()] = true;
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    };
+    const up = (e: KeyboardEvent) => {
+      keys.current[e.key.toLowerCase()] = false;
+    };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+    };
   }, []);
 
-  const handleFlip = (index: number) => {
-    if (flippedIndices.length >= 2 || cards[index].flipped || cards[index].matched) return;
+  // game loop
+  useEffect(() => {
+    if (!started) return;
 
-    const newCards = [...cards];
-    newCards[index].flipped = true;
-    setCards(newCards);
+    const loop = () => {
+      const k = keys.current;
+      let dx = 0;
+      let dy = 0;
+      if (k['arrowup'] || k['w'] || k['z']) dy -= SPEED;
+      if (k['arrowdown'] || k['s']) dy += SPEED;
+      if (k['arrowleft'] || k['a'] || k['q']) dx -= SPEED;
+      if (k['arrowright'] || k['d']) dx += SPEED;
 
-    const newFlipped = [...flippedIndices, index];
-    setFlippedIndices(newFlipped);
+      if (dx || dy) {
+        setPlayer((p) => {
+          const nx = Math.max(0, Math.min(ARENA_W - PLAYER_SIZE, p.x + dx));
+          const ny = Math.max(0, Math.min(ARENA_H - PLAYER_SIZE, p.y + dy));
+          return { x: nx, y: ny };
+        });
+      }
 
-    if (newFlipped.length === 2) {
-      setMoves((m) => m + 1);
-      if (newCards[newFlipped[0]].emoji === newCards[newFlipped[1]].emoji) {
-        newCards[newFlipped[0]].matched = true;
-        newCards[newFlipped[1]].matched = true;
-        setCards(newCards);
-        setFlippedIndices([]);
-        if (newCards.every((c) => c.matched)) {
-          setTimeout(onWin, 500);
+      // collision check
+      const px = playerRef.current.x;
+      const py = playerRef.current.y;
+      let changed = false;
+      const updated = coinsRef.current.map((c) => {
+        if (c.collected) return c;
+        const cx = c.x;
+        const cy = c.y;
+        const overlap =
+          px < cx + COIN_SIZE &&
+          px + PLAYER_SIZE > cx &&
+          py < cy + COIN_SIZE &&
+          py + PLAYER_SIZE > cy;
+        if (overlap) {
+          changed = true;
+          return { ...c, collected: true };
         }
-      } else {
-        setTimeout(() => {
-          const reset = [...newCards];
-          reset[newFlipped[0]].flipped = false;
-          reset[newFlipped[1]].flipped = false;
-          setCards(reset);
-          setFlippedIndices([]);
-        }, 700);
+        return c;
+      });
+      if (changed) {
+        coinsRef.current = updated;
+        setCoins(updated);
+        const total = updated.filter((c) => c.collected).length;
+        setCollected(total);
+        if (total >= coinsRequired) {
+          setTimeout(onWin, 400);
+          return;
+        }
       }
-    }
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [started, coinsRequired, onWin]);
+
+  // touch / virtual pad
+  const setKey = (key: string, value: boolean) => {
+    keys.current[key] = value;
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <span className="text-xs text-muted-foreground">Trouvez les paires</span>
-        <span className="text-xs text-primary font-mono">{moves} coups</span>
-      </div>
-      <div className="grid grid-cols-4 gap-2">
-        {cards.map((card, i) => (
-          <motion.button
-            key={i}
-            onClick={() => handleFlip(i)}
-            className={`aspect-square rounded-xl text-2xl flex items-center justify-center transition-all duration-300 ${
-              card.flipped || card.matched
-                ? 'bg-primary/20 border-primary/50 border'
-                : 'bg-secondary border border-border hover:border-primary/30'
-            } ${card.matched ? 'opacity-60' : ''}`}
-            whileHover={!card.flipped && !card.matched ? { scale: 1.05 } : {}}
-            whileTap={!card.flipped && !card.matched ? { scale: 0.95 } : {}}
-            animate={card.flipped || card.matched ? { rotateY: 0 } : { rotateY: 180 }}
-          >
-            {(card.flipped || card.matched) ? card.emoji : '?'}
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Sequence game
-const SequenceGame = ({ onWin }: { onWin: () => void }) => {
-  const [sequence, setSequence] = useState<number[]>([]);
-  const [playerSeq, setPlayerSeq] = useState<number[]>([]);
-  const [isShowing, setIsShowing] = useState(false);
-  const [activeBtn, setActiveBtn] = useState<number | null>(null);
-  const [round, setRound] = useState(0);
-  const targetRounds = 3;
-  const colors = ['bg-red-500', 'bg-primary', 'bg-green-500', 'bg-accent'];
-
-  const startRound = useCallback(() => {
-    const newSeq = [...sequence, Math.floor(Math.random() * 4)];
-    setSequence(newSeq);
-    setPlayerSeq([]);
-    setIsShowing(true);
-
-    newSeq.forEach((s, i) => {
-      setTimeout(() => {
-        setActiveBtn(s);
-        setTimeout(() => setActiveBtn(null), 400);
-      }, (i + 1) * 600);
-    });
-
-    setTimeout(() => setIsShowing(false), newSeq.length * 600 + 400);
-  }, [sequence]);
-
-  useEffect(() => {
-    if (round === 0) {
-      setTimeout(() => startRound(), 500);
-      setRound(1);
-    }
-  }, []);
-
-  const handlePress = (i: number) => {
-    if (isShowing) return;
-    setActiveBtn(i);
-    setTimeout(() => setActiveBtn(null), 200);
-
-    const newPlayer = [...playerSeq, i];
-    setPlayerSeq(newPlayer);
-
-    const idx = newPlayer.length - 1;
-    if (newPlayer[idx] !== sequence[idx]) {
-      setSequence([]);
-      setPlayerSeq([]);
-      setRound(0);
-      setTimeout(() => {
-        setRound(1);
-        startRound();
-      }, 500);
-      return;
-    }
-
-    if (newPlayer.length === sequence.length) {
-      if (sequence.length >= targetRounds) {
-        setTimeout(onWin, 500);
-      } else {
-        setTimeout(() => startRound(), 800);
-      }
-    }
-  };
-
-  return (
-    <div>
-      <div className="text-center mb-4">
-        <p className="text-xs text-muted-foreground mb-2">Reproduisez la séquence lumineuse</p>
-        <div className="flex justify-center gap-1">
-          {Array.from({ length: targetRounds }).map((_, i) => (
-            <div
-              key={i}
-              className={`w-8 h-2 rounded-full ${i < sequence.length ? 'xp-bar' : 'bg-secondary'}`}
-            />
-          ))}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Coins className="w-4 h-4 text-accent" />
+          <span className="game-font text-[10px] text-primary">
+            {collected} / {coinsRequired}
+          </span>
+        </div>
+        <div className="flex-1 mx-3 h-2 rounded-full bg-secondary overflow-hidden">
+          <motion.div
+            className="h-full xp-bar"
+            animate={{ width: `${(collected / coinsRequired) * 100}%` }}
+            transition={{ type: 'spring', damping: 15 }}
+          />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3 max-w-[200px] mx-auto">
-        {[0, 1, 2, 3].map((i) => (
-          <motion.button
-            key={i}
-            onClick={() => handlePress(i)}
-            className={`aspect-square rounded-2xl ${colors[i]} transition-all duration-200 ${
-              activeBtn === i ? 'opacity-100 scale-105' : 'opacity-40'
-            } ${isShowing ? 'pointer-events-none' : ''}`}
-            whileTap={{ scale: 0.9 }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
 
-// Puzzle - unscramble word
-const PuzzleGame = ({ onWin }: { onWin: () => void }) => {
-  const words = ['CREATIVE', 'DESIGN', 'DIGITAL'];
-  const word = words[Math.floor(Math.random() * words.length)];
-  const [letters, setLetters] = useState<string[]>(() =>
-    word.split('').sort(() => Math.random() - 0.5)
-  );
-  const [answer, setAnswer] = useState<string[]>([]);
-
-  const addLetter = (letter: string, index: number) => {
-    setAnswer([...answer, letter]);
-    setLetters(letters.filter((_, i) => i !== index));
-  };
-
-  const removeLetter = (index: number) => {
-    setLetters([...letters, answer[index]]);
-    setAnswer(answer.filter((_, i) => i !== index));
-  };
-
-  useEffect(() => {
-    if (answer.length === word.length && answer.join('') === word) {
-      setTimeout(onWin, 500);
-    }
-  }, [answer, word, onWin]);
-
-  return (
-    <div className="space-y-6">
-      <p className="text-center text-xs text-muted-foreground">Remettez les lettres dans l'ordre</p>
-
-      <div className="flex justify-center gap-2 min-h-[48px]">
-        {Array.from({ length: word.length }).map((_, i) => (
-          <motion.button
-            key={i}
-            onClick={() => answer[i] && removeLetter(i)}
-            className={`w-10 h-12 rounded-lg border-2 flex items-center justify-center font-bold text-lg transition-all ${
-              answer[i]
-                ? answer.length === word.length && answer.join('') !== word
-                  ? 'border-red-500 bg-red-500/10 text-red-400'
-                  : 'border-primary bg-primary/10 text-primary'
-                : 'border-border border-dashed'
-            }`}
-            layout
-          >
-            {answer[i] || ''}
-          </motion.button>
-        ))}
-      </div>
-
-      <div className="flex justify-center gap-2 flex-wrap">
-        {letters.map((letter, i) => (
-          <motion.button
-            key={`${letter}-${i}`}
-            onClick={() => addLetter(letter, i)}
-            className="w-10 h-12 rounded-lg bg-secondary border border-border flex items-center justify-center font-bold text-lg text-foreground hover:border-primary hover:bg-primary/10 transition-all"
-            whileHover={{ scale: 1.1, y: -4 }}
-            whileTap={{ scale: 0.9 }}
-            layout
-          >
-            {letter}
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Code game - type the code
-const CodeGame = ({ onWin }: { onWin: () => void }) => {
-  const code = 'UNLOCK';
-  const [input, setInput] = useState('');
-  const [error, setError] = useState(false);
-
-  const handleSubmit = () => {
-    if (input.toUpperCase() === code) {
-      onWin();
-    } else {
-      setError(true);
-      setTimeout(() => setError(false), 800);
-      setInput('');
-    }
-  };
-
-  return (
-    <div className="space-y-6 text-center">
-      <p className="text-xs text-muted-foreground">Tapez le code secret pour débloquer</p>
-      <div className="flex justify-center gap-2">
-        <p className="game-font text-xs text-primary/50">
-          Indice: {code.split('').map((c, i) => (i % 2 === 0 ? c : '_')).join(' ')}
-        </p>
-      </div>
-      <motion.input
-        value={input}
-        onChange={(e) => setInput(e.target.value.toUpperCase())}
-        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-        className={`w-full px-6 py-4 rounded-xl bg-secondary border-2 text-center font-mono text-xl tracking-[0.5em] text-foreground focus:outline-none transition-all ${
-          error ? 'border-red-500 animate-shake' : 'border-border focus:border-primary'
-        }`}
-        placeholder="_ _ _ _ _ _"
-        maxLength={6}
-        animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
-      />
-      <motion.button
-        onClick={handleSubmit}
-        className="px-8 py-3 rounded-xl font-bold text-primary-foreground text-sm"
-        style={{ background: 'var(--gradient-primary)' }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <div
+        className="relative mx-auto rounded-xl overflow-hidden game-border"
+        style={{
+          width: ARENA_W,
+          maxWidth: '100%',
+          aspectRatio: `${ARENA_W} / ${ARENA_H}`,
+          background:
+            'linear-gradient(180deg, hsl(20 15% 10%) 0%, hsl(20 18% 14%) 100%)',
+          backgroundImage:
+            'repeating-linear-gradient(0deg, hsl(25 95% 53% / 0.05) 0px, hsl(25 95% 53% / 0.05) 1px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, hsl(25 95% 53% / 0.05) 0px, hsl(25 95% 53% / 0.05) 1px, transparent 1px, transparent 22px)',
+        }}
       >
-        VALIDER
-      </motion.button>
+        {!started && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm">
+            <p className="game-font text-[10px] text-primary mb-3 text-center px-4">
+              RAMASSE {coinsRequired} PIÈCES
+            </p>
+            <p className="text-[10px] text-muted-foreground mb-4 text-center px-4">
+              Flèches / WASD ou pad tactile
+            </p>
+            <motion.button
+              onClick={() => setStarted(true)}
+              className="px-6 py-2 rounded-lg game-font text-[10px] text-primary-foreground"
+              style={{ background: 'var(--gradient-primary)' }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              START
+            </motion.button>
+          </div>
+        )}
+
+        {/* coins */}
+        {coins.map((c) =>
+          c.collected ? null : (
+            <motion.div
+              key={c.id}
+              className="absolute rounded-full"
+              style={{
+                width: COIN_SIZE,
+                height: COIN_SIZE,
+                left: c.x,
+                top: c.y,
+                background:
+                  'radial-gradient(circle at 30% 30%, hsl(45 100% 70%), hsl(35 100% 50%))',
+                boxShadow: '0 0 12px hsl(35 100% 50% / 0.7)',
+              }}
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: c.id * 0.1 }}
+            />
+          )
+        )}
+
+        {/* player */}
+        <motion.div
+          className="absolute rounded-md"
+          style={{
+            width: PLAYER_SIZE,
+            height: PLAYER_SIZE,
+            left: player.x,
+            top: player.y,
+            background: 'var(--gradient-primary)',
+            boxShadow: '0 0 16px hsl(25 95% 53% / 0.7)',
+          }}
+        >
+          <div className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-primary-foreground" />
+          <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary-foreground" />
+        </motion.div>
+      </div>
+
+      {/* virtual pad for mobile */}
+      <div className="flex justify-center md:hidden">
+        <div className="grid grid-cols-3 gap-1 w-40 select-none">
+          <div />
+          <button
+            onTouchStart={() => setKey('arrowup', true)}
+            onTouchEnd={() => setKey('arrowup', false)}
+            onMouseDown={() => setKey('arrowup', true)}
+            onMouseUp={() => setKey('arrowup', false)}
+            onMouseLeave={() => setKey('arrowup', false)}
+            className="aspect-square rounded-lg bg-secondary border border-border active:bg-primary/30 game-font text-[10px] text-primary"
+          >
+            ▲
+          </button>
+          <div />
+          <button
+            onTouchStart={() => setKey('arrowleft', true)}
+            onTouchEnd={() => setKey('arrowleft', false)}
+            onMouseDown={() => setKey('arrowleft', true)}
+            onMouseUp={() => setKey('arrowleft', false)}
+            onMouseLeave={() => setKey('arrowleft', false)}
+            className="aspect-square rounded-lg bg-secondary border border-border active:bg-primary/30 game-font text-[10px] text-primary"
+          >
+            ◀
+          </button>
+          <div />
+          <button
+            onTouchStart={() => setKey('arrowright', true)}
+            onTouchEnd={() => setKey('arrowright', false)}
+            onMouseDown={() => setKey('arrowright', true)}
+            onMouseUp={() => setKey('arrowright', false)}
+            onMouseLeave={() => setKey('arrowright', false)}
+            className="aspect-square rounded-lg bg-secondary border border-border active:bg-primary/30 game-font text-[10px] text-primary"
+          >
+            ▶
+          </button>
+          <div />
+          <button
+            onTouchStart={() => setKey('arrowdown', true)}
+            onTouchEnd={() => setKey('arrowdown', false)}
+            onMouseDown={() => setKey('arrowdown', true)}
+            onMouseUp={() => setKey('arrowdown', false)}
+            onMouseLeave={() => setKey('arrowdown', false)}
+            className="aspect-square rounded-lg bg-secondary border border-border active:bg-primary/30 game-font text-[10px] text-primary"
+          >
+            ▼
+          </button>
+          <div />
+        </div>
+      </div>
     </div>
   );
 };
 
-const MiniGame = ({ type, onWin, onClose }: MiniGameProps) => {
+const MiniGame = ({ onWin, onClose, coinsRequired = 8, gameTitle }: MiniGameProps) => {
   const [won, setWon] = useState(false);
 
-  const handleWin = () => {
+  const handleWin = useCallback(() => {
     setWon(true);
     setTimeout(onWin, 1200);
-  };
-
-  const gameComponents = {
-    quiz: <QuizGame onWin={handleWin} />,
-    memory: <MemoryGame onWin={handleWin} />,
-    sequence: <SequenceGame onWin={handleWin} />,
-    puzzle: <PuzzleGame onWin={handleWin} />,
-    code: <CodeGame onWin={handleWin} />,
-  };
+  }, [onWin]);
 
   return (
     <div className="p-6 rounded-3xl glass-effect game-border relative overflow-hidden">
@@ -397,24 +313,26 @@ const MiniGame = ({ type, onWin, onClose }: MiniGameProps) => {
               >
                 <Sparkles className="w-10 h-10 text-primary-foreground" />
               </motion.div>
-              <p className="game-font text-sm text-primary">DÉBLOQUÉ !</p>
-              <p className="text-xs text-accent mt-2">+100 XP</p>
+              <p className="game-font text-sm text-primary">NIVEAU TERMINÉ !</p>
+              <p className="text-xs text-accent mt-2">+100 XP — Section débloquée</p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Zap className="w-5 h-5 text-accent" />
-          <span className="game-font text-[10px] text-primary">MINI-JEU</span>
+          <span className="game-font text-[10px] text-primary">
+            {gameTitle || 'NIVEAU'}
+          </span>
         </div>
         <button onClick={onClose} className="p-2 rounded-lg hover:bg-secondary transition-colors">
           <X className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
 
-      {gameComponents[type]}
+      <CoinCollectorGame onWin={handleWin} coinsRequired={coinsRequired} />
     </div>
   );
 };
