@@ -41,23 +41,30 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h3 className="font-heading text-2xl md:text-3xl font-bold mb-6">
-              Créateur digital passionné <span className="gradient-text">& innovant</span>
+              Sociologue, consultant communication <span className="gradient-text">& créateur IA</span>
             </h3>
             
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Je suis <strong className="text-foreground">Dao KABRAN</strong>, alias <strong className="text-primary">@Anonymecreator</strong>, 
-                créateur digital spécialisé dans l'intelligence artificielle appliquée à la création de contenu, 
-                le design graphique, le montage vidéo et la gestion de communication.
+                Je suis <strong className="text-foreground">Dao KABRAN</strong>, alias <strong className="text-primary">@Anonymecreator</strong>.
+                Mon profil hybride — <strong className="text-foreground">sociologue</strong>, <strong className="text-foreground">consultant en communication</strong> et <strong className="text-foreground">IA Digital Creator</strong> —
+                me permet d'analyser les publics, structurer une stratégie claire et la traduire en contenus visuels percutants.
               </p>
               <p>
-                Titulaire d'un Master en sociologie des migrations de l'Université Félix 
-                Houphouët-Boigny et formé en tant qu'IA Product Creator chez IISAN SIMPLON CI, 
-                je combine compétences analytiques et créativité numérique pour des solutions visuelles impactantes.
+                Mon Master en <strong className="text-foreground">sociologie des migrations</strong> (Université Félix Houphouët-Boigny)
+                m'apporte une vraie capacité à comprendre les dynamiques sociales, les comportements et les besoins terrain :
+                un atout pour concevoir des messages justes, inclusifs et adaptés à chaque cible.
               </p>
               <p>
-                Actuellement Chargé de Communication chez Nafrica et freelance, je propose des prestations 
-                complètes en stratégie de communication, design et production de contenu créatif.
+                Côté technique, formé <strong className="text-foreground">IA Product Creator</strong> chez IISAN SIMPLON CI,
+                je conçois des contenus IA (visuels, vidéos, motion), pilote des stratégies 360° et propose également un
+                <strong className="text-primary"> accompagnement et des formations à l'usage de l'IA </strong>
+                pour les équipes, indépendants et organisations qui veulent monter en compétence.
+              </p>
+              <p>
+                <strong className="text-foreground">Ce qu'un tel profil apporte à un projet :</strong> une lecture sociologique du public,
+                une stratégie de communication structurée, une exécution créative moderne (design, vidéo, IA) et un transfert de
+                compétences pour rendre les équipes autonomes.
               </p>
             </div>
 

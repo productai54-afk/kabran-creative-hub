@@ -3,7 +3,8 @@ import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { 
   Brain, Palette, Video, Wand2, Figma, 
-  Layers, MonitorSmartphone, Sparkles, Image, Clapperboard, Cpu
+  Layers, MonitorSmartphone, Sparkles, Image, Clapperboard, Cpu,
+  GraduationCap, Users, Lightbulb
 } from 'lucide-react';
 
 const skillCategories = [
@@ -33,6 +34,17 @@ const skillCategories = [
       { name: 'Vidéos IA génératives', icon: Clapperboard },
       { name: 'Animation et court métrage réaliste', icon: Sparkles },
       { name: 'Compréhension et maîtrise d\'outils IA', icon: Cpu },
+    ],
+  },
+  {
+    title: 'Formation & Accompagnement IA',
+    icon: GraduationCap,
+    skills: [
+      { name: 'Formations sur l\'usage de l\'IA', icon: GraduationCap },
+      { name: 'Accompagnement complet équipes & indépendants', icon: Users },
+      { name: 'Ateliers Prompt Engineering', icon: Lightbulb },
+      { name: 'Coaching outils IA créatifs', icon: Sparkles },
+      { name: 'Stratégie d\'intégration IA en entreprise', icon: Brain },
     ],
   },
 ];

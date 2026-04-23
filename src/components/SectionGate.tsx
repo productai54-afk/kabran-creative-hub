@@ -37,9 +37,9 @@ const SectionGate = ({
   if (unlocked) {
     return (
       <motion.div
-        initial={justUnlocked ? { opacity: 0, scale: 0.95 } : false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
+        initial={justUnlocked ? { opacity: 0, y: 40, scale: 0.96, filter: 'blur(8px)' } : false}
+        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
       </motion.div>
