@@ -55,7 +55,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             >
-              IA Digital Creator • Graphiste • Monteur Vidéo
+              Sociologue • Consultant en Communication • IA Digital Creator
             </motion.h2>
 
             <motion.p
@@ -64,9 +64,9 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              Passionné par la création numérique et l'intelligence artificielle, 
-              je transforme vos idées en expériences visuelles captivantes. 
-              Du design graphique au montage vidéo, je donne vie à vos projets créatifs.
+              À la croisée des sciences humaines et du numérique, j'allie analyse sociologique,
+              stratégie de communication et maîtrise de l'IA pour concevoir des contenus pertinents,
+              comprendre les publics et accompagner les organisations dans leur transformation créative.
             </motion.p>
 
             <motion.div
@@ -140,14 +140,14 @@ const Hero = () => {
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <span className="text-sm font-medium gradient-text">IA Creator</span>
+                <span className="text-sm font-medium gradient-text">Sociologue</span>
               </motion.div>
               <motion.div
                 className="absolute -bottom-4 -left-4 px-4 py-2 rounded-xl glass-effect"
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
               >
-                <span className="text-sm font-medium gradient-text-accent">Graphiste</span>
+                <span className="text-sm font-medium gradient-text-accent">Consultant Com.</span>
               </motion.div>
             </div>
           </motion.div>
