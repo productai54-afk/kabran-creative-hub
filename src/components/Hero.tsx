@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowDown, Github, Linkedin } from 'lucide-react';
+import { ArrowDown, Github, Linkedin, Gamepad2, Coins, Lock } from 'lucide-react';
 import profileImage from '@/assets/profile.jpeg';
 
 const Hero = () => {
@@ -92,6 +92,39 @@ const Hero = () => {
               >
                 Voir mes créations
               </motion.a>
+            </motion.div>
+
+            {/* Game Guide */}
+            <motion.div
+              className="mt-8 p-5 rounded-2xl glass-effect game-border max-w-xl mx-auto lg:mx-0"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75, duration: 0.7 }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg" style={{ background: 'var(--gradient-primary)' }}>
+                  <Gamepad2 className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <span className="game-font text-[10px] text-primary">MODE D'EMPLOI</span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                Bienvenue dans mon <span className="text-primary font-semibold">portfolio interactif</span> :
+                un voyage à travers mon parcours de sociologue, consultant en communication et créateur IA.
+                Tu y découvriras mon profil, mes compétences, mes expériences et mes créations.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-accent shrink-0" />
+                  <span className="text-muted-foreground">Chaque section est <span className="text-accent font-semibold">verrouillée</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Coins className="w-4 h-4 text-accent shrink-0" />
+                  <span className="text-muted-foreground">Joue et <span className="text-accent font-semibold">ramasse les pièces</span> pour débloquer</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground/80 mt-3 italic">
+                🎮 Utilise les flèches du clavier ou le pad tactile sur mobile. Bonne aventure !
+              </p>
             </motion.div>
 
             {/* Social Links */}
