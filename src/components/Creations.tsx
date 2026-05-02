@@ -317,6 +317,58 @@ const Creations = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Site Lightbox */}
+      <AnimatePresence>
+        {selectedSite && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedSite(null)}
+          >
+            <motion.div
+              className="w-full max-w-6xl h-[85vh] rounded-2xl overflow-hidden border border-primary/40 bg-secondary flex flex-col"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-4 py-2 bg-background/80 border-b border-border">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground truncate">
+                  <Globe size={14} className="text-primary" />
+                  <span className="truncate">{selectedSite}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={selectedSite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-md text-xs font-medium text-primary-foreground flex items-center gap-1.5"
+                    style={{ background: 'var(--gradient-primary)' }}
+                  >
+                    <ExternalLink size={12} />
+                    Ouvrir
+                  </a>
+                  <button
+                    onClick={() => setSelectedSite(null)}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium border border-border hover:border-primary hover:text-primary transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+              <iframe
+                src={selectedSite}
+                title="Aperçu site"
+                className="w-full flex-1 bg-white"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
