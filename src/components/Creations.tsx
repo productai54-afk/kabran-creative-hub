@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { FileImage, Video, FolderKanban, ExternalLink, Brain, Target, Play } from 'lucide-react';
+import { FileImage, Video, FolderKanban, ExternalLink, Brain, Target, Play, Globe } from 'lucide-react';
 
 // Import images
 import campagneCan from '@/assets/campagne-can.png';
@@ -18,6 +18,7 @@ const categories = [
   { id: 'videos', label: 'Montages Vidéos', icon: Video },
   { id: 'ia', label: 'IA Générative', icon: Brain },
   { id: 'strategie', label: 'Stratégie & Communication', icon: Target },
+  { id: 'sites', label: 'Sites Vitrine', icon: Globe },
 ];
 
 const creations = [
@@ -81,6 +82,15 @@ const creations = [
     isVideo: true,
     videoSrc: '/videos/generique-livre-ia.mp4',
   },
+  // Sites Vitrine
+  {
+    id: 9,
+    title: 'Ong Se Consouffle',
+    category: 'sites',
+    description: "Site vitrine réalisé pour l'ONG Se Consouffle - Design moderne et responsive",
+    isSite: true,
+    siteUrl: 'https://ongseconsouffle.netlify.app/',
+  },
 ];
 
 const Creations = () => {
@@ -88,6 +98,7 @@ const Creations = () => {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedSite, setSelectedSite] = useState<string | null>(null);
 
   const filteredCreations = activeCategory === 'all'
     ? creations
@@ -159,13 +170,30 @@ const Creations = () => {
                 <div 
                   className="relative rounded-2xl overflow-hidden card-gradient border border-border hover:border-primary/30 transition-all duration-500 hover-glow cursor-pointer"
                   onClick={() => {
-                    if ('image' in creation && creation.image) {
+                    if ((creation as any).isSite && (creation as any).siteUrl) {
+                      setSelectedSite((creation as any).siteUrl);
+                    } else if ('image' in creation && creation.image) {
                       setSelectedImage(creation.image as string);
                     }
                   }}
                 >
                   <div className="aspect-square overflow-hidden">
-                    {creation.isVideo ? (
+                    {(creation as any).isSite ? (
+                      <div className="relative w-full h-full bg-secondary">
+                        <iframe
+                          src={(creation as any).siteUrl}
+                          title={creation.title}
+                          className="w-full h-full pointer-events-none"
+                          loading="lazy"
+                          style={{ transform: 'scale(0.6)', transformOrigin: 'top left', width: '166.67%', height: '166.67%' }}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-background/30 group-hover:bg-background/10 transition-colors">
+                          <div className="p-4 rounded-full bg-primary/80 group-hover:bg-primary transition-colors">
+                            <Globe className="w-8 h-8 text-primary-foreground" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : creation.isVideo ? (
                       <div className="relative w-full h-full bg-secondary flex items-center justify-center">
                         <video
                           src={creation.videoSrc}
@@ -286,6 +314,58 @@ const Creations = () => {
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Site Lightbox */}
+      <AnimatePresence>
+        {selectedSite && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedSite(null)}
+          >
+            <motion.div
+              className="w-full max-w-6xl h-[85vh] rounded-2xl overflow-hidden border border-primary/40 bg-secondary flex flex-col"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-4 py-2 bg-background/80 border-b border-border">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground truncate">
+                  <Globe size={14} className="text-primary" />
+                  <span className="truncate">{selectedSite}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={selectedSite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-md text-xs font-medium text-primary-foreground flex items-center gap-1.5"
+                    style={{ background: 'var(--gradient-primary)' }}
+                  >
+                    <ExternalLink size={12} />
+                    Ouvrir
+                  </a>
+                  <button
+                    onClick={() => setSelectedSite(null)}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium border border-border hover:border-primary hover:text-primary transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+              <iframe
+                src={selectedSite}
+                title="Aperçu site"
+                className="w-full flex-1 bg-white"
+              />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
